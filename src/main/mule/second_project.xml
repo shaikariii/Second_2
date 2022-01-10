@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="315d73ba-3e95-4844-8dee-a2d601140cb1" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="e7e7db4a-7be6-4855-a3c6-680eb189f857" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="admin" database="sample" />
+	</db:config>
+	<flow name="second_projectFlow" doc:id="7fef9377-e79c-4075-8211-f4a1757eaf0f" >
+		<http:listener doc:name="Listener" doc:id="1692c7af-26c3-42ad-885b-ffef6a14e1b7" config-ref="HTTP_Listener_config" path="/fetchEmployee"/>
+		<logger level="INFO" doc:name="Logger" doc:id="6987f7ad-1e59-48bf-8b04-90c413cd6e8b" message="Start log and the Payload is : #[payload]"/>
+		<db:select doc:name="Select" doc:id="12196faf-427f-4c17-9089-b4d31693bc8f" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from employee;]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="f263111b-15cc-49c2-a864-e683ff420671" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	emp_id : payload[0].emp_id,
+	emp_name : payload.emp_name,
+	emp_status : payload.emp_status
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="9549a048-fede-487a-831c-2847cfaa3e6b" message="records has been fetched successfully : #[payload]"/>
+	</flow>
+</mule>
