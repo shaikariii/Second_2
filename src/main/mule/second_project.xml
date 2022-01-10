@@ -25,7 +25,7 @@ output application/json
 ---
 {
 	emp_id : payload[0].emp_id,
-	emp_name : payload.emp_name,
+	emp_name : payload[0].emp_name,
 	emp_status : payload.emp_status
 }]]></ee:set-payload>
 			</ee:message>
