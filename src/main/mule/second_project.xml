@@ -23,10 +23,10 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-{
-	emp_id : payload[0].emp_id,
+ payload map(item,index) -> {
+	emp_id : item.emp_id,
 	emp_name : payload[0].emp_name,
-	emp_status : payload.emp_status
+	emp_status : payload[0].emp_status
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
